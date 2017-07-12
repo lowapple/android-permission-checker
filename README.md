@@ -3,6 +3,8 @@
 
 귀찮은 안드로이드 권한 요청을 간단하게할 수 있습니다.
 
+![](./assets/image1.png)
+
 ``` Java
 // 체크 되어 있는지 확인
 Log.i("Log", PinPermission(this).checkPermission(Manifest.permission.WRITE_CALENDAR).toString())
