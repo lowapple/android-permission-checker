@@ -19,12 +19,12 @@ class MainActivity : AppCompatActivity() {
         PinPermission(this)
                 .addPermission(android.Manifest.permission.CAMERA)
                 .addPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE)
-                .setPermissionGranted {
+                .setPermissionGranted({
                     Toast.makeText(this, "Yeah", Toast.LENGTH_SHORT).show()
-                }
-                .setPermissionDenied {
+                })
+                .setPermissionDenied({
                     Toast.makeText(this, "No", Toast.LENGTH_SHORT).show()
-                }
+                })
                 .check()
     }
 }

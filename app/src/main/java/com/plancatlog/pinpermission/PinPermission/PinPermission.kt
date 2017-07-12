@@ -1,12 +1,9 @@
 package com.plancatlog.pinpermission.PinPermission
 
 import android.app.Activity
-import android.app.ActivityManager
-import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.support.v4.app.ActivityCompat
 import android.util.Log
-import java.util.jar.Manifest
 
 /**
  * Created by plancatlog on 2017. 7. 10..
@@ -14,9 +11,10 @@ import java.util.jar.Manifest
 
 class PinPermission(context: Activity) {
     private val context = context
-    private val requestPermissions = arrayListOf<String>()
-    private var permissionDenied: (() -> Unit)? = null
-    private var permissionGranted: (() -> Unit)? = null
+
+    init {
+        PinPermissionInstance.Instance().requestPermissions.clear()
+    }
 
     fun checkPermission(permission: String, callback: ((Boolean) -> Unit)? = null): Boolean {
         val result = context.checkSelfPermission(permission) != PackageManager.PERMISSION_DENIED
@@ -26,37 +24,30 @@ class PinPermission(context: Activity) {
     }
 
     fun setPermissionGranted(callback: () -> Unit): PinPermission {
-        permissionGranted = callback
+        PinPermissionInstance.Instance().permissionGranted = callback
         return this
     }
 
     fun setPermissionDenied(callback: () -> Unit): PinPermission {
-        permissionDenied = callback
+        PinPermissionInstance.Instance().permissionDenied = callback
         return this
     }
 
     fun addPermission(permission: String): PinPermission {
-        requestPermissions.add(permission)
+        PinPermissionInstance.Instance().requestPermissions.add(permission)
         return this
     }
 
     fun check() {
-        ActivityCompat.requestPermissions(context, requestPermissions.toTypedArray(), 1)
-
-        var firstDeniedPermission = true
-        requestPermissions.forEachIndexed { index, s ->
-            val permission = checkPermission(s)
-            if (!permission)
-                firstDeniedPermission = false
+        var permissionCheck = true
+        PinPermissionInstance.Instance().requestPermissions.forEachIndexed { index, s ->
+            if (permissionCheck)
+                if (!checkPermission(s))
+                    permissionCheck = false
         }
-        if (!firstDeniedPermission) {
-            if (permissionDenied != null) {
-                permissionDenied?.invoke()
-            }
-        } else {
-            if (permissionGranted != null) {
-                permissionGranted?.invoke()
-            }
+        if (!permissionCheck) {
+            val pinPermissionIntent = Intent(context, PinPermissionActivity::class.java)
+            context.startActivityForResult(pinPermissionIntent, 0)
         }
     }
 }
