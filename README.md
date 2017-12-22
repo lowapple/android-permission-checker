@@ -1,5 +1,6 @@
-# PinPermission
-> Android Permission Checker
+# Android Permission Checker
+
+> Pin Permission
 
 귀찮은 안드로이드 권한 요청을 간단하게할 수 있습니다.
 
